@@ -13,6 +13,7 @@ class Database:
                        service_url TEXT,
                        username TEXT,
                        password TEXT NOT NULL,
+                       salt TEXT NOT NULL,
                        created_at TEXT DEFAULT (datetime('now', 'localtime')),
                        updated_at TEXT DEFAULT (datetime('now', 'localtime'))
                        ) [WITHOUT ROWID];
