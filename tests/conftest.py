@@ -5,5 +5,5 @@ from Database import database
 
 
 @pytest.fixture
-def db(db="localpassword.db"):
+def db(db="localpasswords.db"):
     return db
