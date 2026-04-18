@@ -3,7 +3,7 @@ import sqlite3
 
 class Database:
 
-    def create_database(db="localpasswords.db"):
+    def create_database(db: str = "localpasswords.db") -> None:
         with sqlite3.connect(db) as con:
             cur = con.cursor()
             cur.execute(
@@ -21,7 +21,7 @@ class Database:
             )
         con.close()
 
-    def read_database(db="localpasswords.db") -> list:
+    def read_database(db: str = "localpasswords.db") -> list:
         with sqlite3.connect(db) as con:
             cur = con.cursor()
             cur.execute("SELECT * FROM passwords")
@@ -29,7 +29,7 @@ class Database:
         con.close()
         return data
 
-    def read_database_field(field: str, db="localpasswords.db") -> str:
+    def read_database_field(field: str, db: str = "localpasswords.db") -> str:
         with sqlite3.connect(db) as con:
             cur = con.cursor()
             cur.execute(f"SELECT {field} FROM passwords")
@@ -37,7 +37,7 @@ class Database:
         con.close()
         return str(data)
 
-    def insert_database(fields: dict, db="localpasswords.db"):
+    def insert_database(fields: dict, db: str = "localpasswords.db") -> None:
         with sqlite3.connect(db) as con:
             cur = con.cursor()
             cur.execute(
