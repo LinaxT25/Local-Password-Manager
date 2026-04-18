@@ -20,3 +20,31 @@ class Database:
                 """
             )
         con.close()
+
+    def read_database(db="localpasswords.db") -> list:
+        with sqlite3.connect(db) as con:
+            cur = con.cursor()
+            cur.execute("SELECT * FROM passwords")
+            data = cur.fetchall()
+        con.close()
+        return data
+
+    def read_database_field(field: str, db="localpasswords.db") -> str:
+        with sqlite3.connect(db) as con:
+            cur = con.cursor()
+            cur.execute(f"SELECT {field} FROM passwords")
+            data = cur.fetchone()
+        con.close()
+        return str(data)
+
+    def insert_database(fields: dict, db="localpasswords.db"):
+        with sqlite3.connect(db) as con:
+            cur = con.cursor()
+            cur.execute(
+                """INSERT INTO passwords 
+                (id, service_name, service_url, username, password, salt)
+                VALUES (:id, :service_name, :service_url, :username, :password, :salt)
+                """,
+                fields,
+            )
+        con.close()
