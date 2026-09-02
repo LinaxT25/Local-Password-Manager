@@ -1,8 +1,8 @@
 import sqlite3
+from contextlib import closing
 
 
 class Database:
-
     __allowed_fields = {
         "id",
         "service_name",
@@ -12,7 +12,8 @@ class Database:
         "salt",
     }
 
-    def create_database(db: str = "localpasswords.db") -> None:
+    def __init__(self, db: str = "localpassword.db") -> None:
+        self.db = db
         query = """CREATE TABLE IF NOT EXISTS passwords(
                     id TEXT NOT NULL PRIMARY KEY,
                     service_name TEXT NOT NULL,
@@ -25,34 +26,31 @@ class Database:
                     ) WITHOUT ROWID;
                 """
 
-        with sqlite3.connect(db) as con:
+        with closing(sqlite3.connect(db)) as con:
             cur = con.cursor()
-            cur.execute(query)
-        con.close()
+            _ = cur.execute(query)
 
-    def read_database(db: str = "localpasswords.db") -> list:
+    def read_database(self) -> list:
         query = "SELECT * FROM passwords"
 
-        with sqlite3.connect(db) as con:
+        with closing(sqlite3.connect(self.db)) as con:
             cur = con.cursor()
-            cur.execute(query)
+            _ = cur.execute(query)
             data = cur.fetchall()
-        con.close()
 
         return data
 
-    def read_database_field(field: str, db: str = "localpasswords.db") -> str:
+    def read_database_field(self, field: str) -> str:
         query = f"SELECT {field} FROM passwords"
 
-        with sqlite3.connect(db) as con:
+        with closing(sqlite3.connect(self.db)) as con:
             cur = con.cursor()
-            cur.execute(query)
+            _ = cur.execute(query)
             data = cur.fetchone()
-        con.close()
 
         return str(data)
 
-    def insert_database(self, fields: dict, db: str = "localpasswords.db") -> None:
+    def insert_database(self, fields: dict) -> None:
         valid_fields = {
             key: value for key, value in fields.items() if key in self.__allowed_fields
         }
@@ -68,19 +66,16 @@ class Database:
             "salt": valid_fields["salt"],
         }
 
-        query = """INSERT INTO passwords 
-                (id, service_name, service_url, username, password, salt), 
+        query = """INSERT INTO passwords
+                (id, service_name, service_url, username, password, salt),
                 VALUES (:id, :service_name, :service_url, :username, :password, :salt)
                 """
 
-        with sqlite3.connect(db) as con:
+        with closing(sqlite3.connect(self.db)) as con:
             cur = con.cursor()
-            cur.execute(query, params)
-        con.close()
+            _ = cur.execute(query, params)
 
-    def update_database(
-        self, id: str, fields: dict, db: str = "localpasswords.db"
-    ) -> None:
+    def update_database(self, id: str, fields: dict) -> None:
         valid_fields = {
             key: value for key, value in fields.items() if key in self.__allowed_fields
         }
@@ -95,16 +90,14 @@ class Database:
                 WHERE id=:id
                 """
 
-        with sqlite3.connect(db) as con:
+        with closing(sqlite3.connect(self.db)) as con:
             cur = con.cursor()
-            cur.execute(query, params)
-        con.close()
+            _ = cur.execute(query, params)
 
-    def delete_database(id: str, db: str = "localpasswords.db") -> None:
+    def delete_database(self, id: str) -> None:
         params = {"id": id}
         query = "DELETE FROM passwords WHERE id=:id"
 
-        with sqlite3.connect(db) as con:
+        with closing(sqlite3.connect(self.db)) as con:
             cur = con.cursor()
-            cur.execute(query, params)
-        con.close()
+            _ = cur.execute(query, params)
